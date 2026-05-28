@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LET Mastery Pro | Ultimate Collaborative Team Edition</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.js"></script>
+    
+    <style>
+        :root {
+            --bg: #030712;
+            --sidebar: rgba(17, 24, 39, 0.75);
+            --card-bg: rgba(31, 41, 55, 0.4);
+            --text-main: #f9fafb;
+            --text-sub: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --neon-blue: #00f2fe;
+            --neon-purple: #4facfe;
+            --gen-ed: #3b82f6;
+            --prof-ed: #10b981;
+            --major: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.55);
+            --radius: 16px;
+            --glass: rgba(17, 24, 39, 0.65);
+            --glow: rgba(0, 242, 254, 0.1);
+            --font-mono: 'JetBrains Mono', monospace;
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --input-text: #f9fafb;
+            --min-tap: 48px;
+        }
+
+        .dark-mode {
+            --bg: #030712;
+            --sidebar: rgba(17, 24, 39, 0.8);
+            --card-bg: rgba(31, 41, 55, 0.4);
+            --text-main: #f9fafb;
+            --text-sub: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --input-text: #f9fafb;
+        }
+
+        .light-mode {
+            --bg: #f3f4f6;
+            --sidebar: rgba(255, 255, 255, 0.92);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --text-main: #111827;
+            --text-sub: #4b5563;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 15px 35px rgba(31, 41, 55, 0.06);
+            --glass: rgba(255, 255, 255, 0.9);
+            --glow: rgba(59, 130, 246, 0.04);
+            --neon-blue: #0284c7;
+            --neon-purple: #6d28d9;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-text: #111827;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body { 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh; 
+            transition: background 0.3s ease, color 0.3s ease; 
+            overflow-x: hidden; 
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-sub); }
+
+        .hidden { display: none !important; }
+        
+        .glass-panel { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(24px) saturate(140%); 
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid var(--border); 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow); 
+            transition: background 0.3s, border-color 0.3s, transform 0.2s; 
+        }
+
+        /* --- Adaptive Navigation Components --- */
+        nav { 
+            width: 280px; 
+            background: var(--sidebar); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            height: 100vh; 
+            position: fixed; 
+            padding: 32px 20px; 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            z-index: 999; 
+            transition: transform 0.3s ease, background 0.3s; 
+        }
+        .logo-section { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .logo-section i { color: var(--neon-blue); font-size: 28px; filter: drop-shadow(0 0 8px var(--neon-blue)); }
+        
+        .user-status-tag { display: flex; align-items: center; gap: 12px; padding: 14px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 14px; margin-top: 24px; }
+        .light-mode .user-status-tag { background: rgba(0,0,0,0.03); }
+        .status-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+        
+        .nav-links { list-style: none; margin-top: 24px; flex-grow: 1; overflow-y: auto; }
+        .nav-links li { 
+            margin: 8px 0; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            padding: 0 16px; 
+            min-height: var(--min-tap);
+            border-radius: var(--radius); 
+            color: var(--text-sub); 
+            font-weight: 600; 
+            font-size: 14px;
+            transition: all 0.2s ease; 
+        }
+        .nav-links li:hover { background: rgba(0, 242, 254, 0.05); color: var(--neon-blue); transform: translateX(3px); }
+        .nav-links li.active { background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color: #030712; font-weight: 700; }
+        .light-mode .nav-links li.active { color: #ffffff; }
+        .nav-footer { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: auto; }
+
+        /* --- Cross-Device Unified Mobile Bottom Bar --- */
+        .mobile-nav-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: var(--sidebar);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 4px;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            flex: 1;
+            height: 100%;
+            gap: 2px;
+            cursor: pointer;
+        }
+        .mobile-nav-item i { font-size: 22px; }
+        .mobile-nav-item.active { color: var(--neon-blue); }
+
+        /* --- Layout Topology Workspace --- */
+        main { margin-left: 280px; width: calc(100% - 280px); padding: 40px; min-height: 100vh; transition: all 0.3s ease; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); gap: 16px; }
+        .header-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .metric-badge { background: var(--sidebar); border: 1px solid var(--border); padding: 0 16px; min-height: 38px; border-radius: 30px; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+
+        /* Unified Header Action Control Center Buttons */
+        .system-utility-cluster { display: flex; align-items: center; gap: 10px; }
+        .utility-action-trigger { min-height: 38px; padding: 0 16px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); transition: all 0.2s ease; }
+        .utility-action-trigger:hover { border-color: var(--neon-blue); transform: translateY(-1px); }
+        .utility-action-trigger.logout-accent:hover { border-color: var(--danger); background: rgba(239, 68, 68, 0.08); color: var(--danger); }
+
+        /* --- Grid Sizing Modules --- */
+        .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+        .stats-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px; margin-bottom: 28px; }
+        .stat-node { padding: 22px; }
+        .stat-node p { text-transform: uppercase; font-size: 11px; letter-spacing: 1px; color: var(--text-sub); font-weight: 700; }
+        .stat-node h3 { font-size: 26px; font-weight: 800; margin-top: 6px; font-family: var(--font-mono); }
+        .progress-lane { width: 100%; height: 6px; background: rgba(0,0,0,0.2); margin-top: 12px; border-radius: 3px; overflow: hidden; }
+        .light-mode .progress-lane { background: rgba(0,0,0,0.06); }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 0%; transition: width 0.4s ease; }
+
+        .category-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        .matrix-card { padding: 26px; cursor: pointer; border-left: 4px solid var(--gen-ed); }
+        .matrix-card.prof { border-left-color: var(--prof-ed); }
+        .matrix-card.major { border-left-color: var(--major); }
+        .matrix-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.03); }
+        .light-mode .matrix-card:hover { background: rgba(255,255,255,0.85); }
+        .matrix-card h4 { font-size: 17px; font-weight: 800; }
+        .matrix-card p { font-size: 13px; color: var(--text-sub); margin-top: 6px; font-weight: 500; line-height: 1.4; }
+
+        .right-sidebar-panel { display: flex; flex-direction: column; gap: 24px; }
+        .widget-box { padding: 22px; }
+        .widget-box h3 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--text-sub); }
+        
+        .activity-stream { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .activity-node { font-size: 13px; padding: 14px; background: rgba(0,0,0,0.08); border-left: 3px solid var(--neon-blue); border-radius: 0 10px 10px 0; line-height: 1.4; }
+        .light-mode .activity-node { background: rgba(255,255,255,0.5); }
+        .activity-node span { color: var(--text-sub); font-family: var(--font-mono); display: block; margin-top: 6px; font-size: 11px; }
+
+        .subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .subject-node { padding: 22px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+        .subject-node:hover { background: rgba(255,255,255,0.03); transform: scale(1.01); border-color: var(--neon-blue); }
+        .light-mode .subject-node:hover { background: rgba(255,255,255,0.85); }
+
+        /* --- Fluid-Responsive Recall Workspace --- */
+        .arena-canvas { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+        .viewport-3d { width: 100%; height: 380px; perspective: 1500px; cursor: pointer; position: relative; }
+        .card-rotator { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .viewport-3d.flipped .card-rotator { transform: rotateY(180deg); }
+        .face-front, .face-back { position: absolute; inset: 0; backface-visibility: hidden; padding: 36px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .face-front { background: radial-gradient(circle at top left, rgba(23, 37, 66, 0.75), rgba(11, 17, 30, 0.95)); }
+        .face-back { background: radial-gradient(circle at bottom right, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.85)); transform: rotateY(180deg); }
+        .light-mode .face-front, .light-mode .face-back { background: #ffffff; border-color: var(--border); }
+        .card-text-space { font-size: 1.4rem; font-weight: 700; line-height: 1.5; word-break: break-word; }
+        .card-meta-strip { position: absolute; top: 22px; left: 24px; display: flex; gap: 8px; }
+        .meta-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; background: rgba(0,0,0,0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-sub); }
+        .light-mode .meta-tag { background: rgba(0,0,0,0.03); }
+        .fav-node { position: absolute; top: 20px; right: 24px; font-size: 24px; color: var(--text-sub); min-height: var(--min-tap); display: flex; align-items: center; }
+        .fav-node.active { color: #f59e0b; filter: drop-shadow(0 0 8px #f59e0b); }
+
+        .grading-dock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .grade-btn { border: none; min-height: var(--min-tap); padding: 12px; border-radius: 14px; color: white; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; transition: all 0.2s; }
+        .grade-btn:hover { transform: translateY(-2px); filter: brightness(1.15); }
+        .g-forgot { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .g-hard { background: linear-gradient(135deg, #f59e0b, #b45309); }
+        .g-good { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .g-easy { background: linear-gradient(135deg, #10b981, #047857); }
+
+        /* --- Scalable Input Components --- */
+        .form-canvas { padding: 26px; margin-bottom: 24px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .input-block { display: flex; flex-direction: column; gap: 6px; }
+        .input-block label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub); }
+        .input-block input, .input-block select, .input-block textarea { 
+            min-height: var(--min-tap);
+            padding: 12px 16px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            color: var(--input-text); 
+            font-size: 15px; 
+            font-weight: 500; 
+            outline: none; 
+            transition: border-color 0.2s, background 0.3s; 
+        }
+        .input-block input:focus, .input-block select:focus, .input-block textarea:focus { border-color: var(--neon-blue); }
+        
+        .action-btn { 
+            min-height: var(--min-tap);
+            padding: 12px 26px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 14px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; 
+            color: #030712; 
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); 
+        }
+        .light-mode .action-btn { color: #ffffff; }
+        .action-btn:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,242,254,0.15); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .light-mode .btn-danger { color: white; }
+
+        .flex-list { display: flex; flex-direction: column; gap: 14px; }
+        .list-card-item { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        .light-mode .list-card-item { background: rgba(255,255,255,0.75); }
+        .list-card-contents { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+        
+        .icon-trigger-btn { 
+            width: var(--min-tap); 
+            height: var(--min-tap); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.04); 
+            border: 1px solid var(--border); 
+            color: var(--text-sub); 
+            cursor: pointer; 
+            transition: all 0.2s; 
+        }
+        .light-mode .icon-trigger-btn { background: rgba(0,0,0,0.04); }
+        .icon-trigger-btn:hover { color: var(--neon-blue); background: rgba(0,242,254,0.08); transform: scale(1.05); }
+        .icon-trigger-btn.btn-trash:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
+        .icon-trigger-btn.btn-edit:hover { color: var(--major); background: rgba(245,158,11,0.08); }
+
+        #toast-boundary { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 100000; pointer-events: none; }
+        .toast-node { pointer-events: auto; width: 340px; padding: 18px; background: rgba(11, 17, 30, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(0, 242, 254, 0.2); border-left: 4px solid var(--neon-blue); border-radius: 14px; display: flex; gap: 14px; align-items: flex-start; transform: translateX(130%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.25); color: #ffffff; }
+        .toast-node.visible { transform: translateX(0); }
+        .toast-node i { color: var(--neon-blue); font-size: 22px; }
+        .toast-msg-body h5 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+        .toast-msg-body p { font-size: 12px; color: #9ca3af; line-height: 1.4; }
+
+        .pomo-embed-panel { padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(0,0,0,0.15); border: 1px solid var(--border); }
+        .pomo-digits { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--neon-blue); }
+
+        /* --- Authentication Modal UI --- */
+        #authOverlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.3s; }
+        .auth-card { width: 100%; max-width: 400px; padding: 32px; text-align: center; }
+        .auth-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--neon-blue); }
+        .auth-card p { font-size: 14px; color: var(--text-sub); margin-bottom: 24px; }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-radius: 12px; background: var(--input-bg); overflow: hidden; }
+        .auth-tab { flex: 1; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text-sub); transition: 0.2s; text-transform: uppercase; }
+        .auth-tab.active { background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color: #030712; }
+
+        /* --- Responsive Core Layout Constraints --- */
+        @media (max-width: 1024px) {
+            .dash-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            nav { transform: translateX(-100%); width: 0; padding: 0; border: none; overflow: hidden; }
+            .mobile-nav-bar { display: flex; }
+            main { margin-left: 0; width: 100%; padding: 24px 16px 96px 16px; }
+            header { flex-direction: column; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+            .header-meta { width: 100%; justify-content: space-between; }
+            .form-grid { grid-template-columns: 1fr; }
+            .grading-dock { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            #toast-boundary { left: 16px; right: 16px; bottom: 88px; }
+            .toast-node { width: 100%; }
+            .viewport-3d { height: 320px; }
+            .card-text-space { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div id="authOverlay">
+        <div class="auth-card glass-panel">
+            <i class='bx bxs-layer' style="font-size:48px; color:var(--neon-blue); margin-bottom:12px;"></i>
+            <h2>LET Mastery Pro</h2>
+            <p>Secure Hub Node Authentication Matrix</p>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLogin" onclick="switchAuthMode('login')">Login Node</div>
+                <div class="auth-tab" id="tabSignup" onclick="switchAuthMode('signup')">Register Node</div>
+            </div>
+
+            <div class="input-block" style="text-align: left; margin-bottom: 16px;">
+                <label>Secure Email Identification</label>
+                <input type="email" id="authEmail" placeholder="coordinator@domain.com">
+            </div>
+            <div class="input-block" style="text-align: left; margin-bottom: 24px;">
+                <label>Access Matrix Passkey</label>
+                <input type="password" id="authPassword" placeholder="••••••••">
+            </div>
+            <button class="action-btn" style="width: 100%;" onclick="executeAuthenticationPipeline()" id="authSubmitBtn">Initialize Session Vector</button>
+        </div>
+    </div>
+
+    <div id="toast-boundary"></div>
+
+    <nav id="sidebarPrimaryNavigationContainer">
+        <div>
+            <div class="logo-section">
+                <i class='bx bxs-layer'></i> <span>LET Mastery<span style="color:var(--neon-blue)">Pro</span></span>
+            </div>
+            <div class="user-status-tag">
+                <div class="status-dot"></div>
+                <div>
+                    <div id="navUserBadge" style="font-weight: 800; font-size: 14px; letter-spacing:-0.2px; word-break: break-all;">Offline Module</div>
+                    <div id="navRoleBadge" style="font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase;">Awaiting Verification</div>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li id="m-dash" class="active" onclick="routeWorkspace('dashboard')"><i class='bx bxs-grid-alt'></i> <span>Dashboard Matrix</span></li>
+                <li id="m-hub" onclick="routeWorkspace('hub')"><i class='bx bxs-direction-left'></i> <span>Study Hub Lanes</span></li>
+                <li id="m-schedules" onclick="routeWorkspace('schedules')"><i class='bx bxs-calendar-event'></i> <span>Schedules</span></li>
+                <li id="m-notes" onclick="routeWorkspace('notes')"><i class='bx bxs-layer-plus'></i> <span>Shared Notebook</span></li>
+                <li id="m-admin" onclick="routeWorkspace('admin')"><i class='bx bxs-shield-quarter' style="color:var(--neon-blue)"></i> <span style="color:var(--neon-blue)">Control Panel</span></li>
+            </ul>
+        </div>
+        <div class="nav-footer">
+            <div class="pomo-embed-panel glass-panel">
+                <div>
+                    <div id="pomoLabel" style="font-size:10px; font-weight:800; color:var(--text-sub); text-transform:uppercase;">POMODORO TIMELINE</div>
+                    <div id="pomoDisplayClock" class="pomo-digits">25:00</div>
+                </div>
+                <button class="icon-trigger-btn" id="pomoTriggerBtn" onclick="togglePomodoroEngine()"><i class='bx bx-play'></i></button>
+            </div>
+            <div class="pomo-embed-panel glass-panel" style="background:transparent; padding:8px;">
+                <div style="font-size:12px; font-weight:700; color:var(--text-sub);"><i class='bx bx-music'></i> Focus Stream</div>
+                <button class="icon-trigger-btn" style="width:34px; height:34px;" onclick="toggleAudioStream()"><i class='bx bx-volume-mute' id="audioTrackIco"></i></button>
+                <audio id="audioRuntimeStream" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-nav-bar">
+        <div class="mobile-nav-item active" id="mb-dash" onclick="routeWorkspace('dashboard')">
+            <i class='bx bxs-grid-alt'></i><span>Dash</span>
+        </div>
+        <div class="mobile-nav-item" id="mb-hub" onclick="routeWorkspace('hub')">
+            <i class='bx bxs-direction-left'></i><span>Hub</span>
+        </div>
+        <div class="mobile-nav-item" id="mb-schedules" onclick="routeWorkspace('schedules')">
+            <i class='bx bxs-calendar-event'></i><span>Sched</span>
+        </div>
+        <div class="mobile-nav-item" id="mb-notes" onclick="routeWorkspace('notes')">
+            <i class='bx bxs-layer-plus'></i><span>Notes</span>
+        </div>
+    </div>
+
+    <main>
+        <header>
+            <div>
+                <h1 id="workspaceMainHeaderTitle" style="font-size:26px; font-weight:800; letter-spacing:-0.5px;">Dashboard Matrix</h1>
+                <p id="workspaceMainHeaderDesc" style="color: var(--text-sub); font-size: 14px; margin-top: 4px; font-weight: 500;">Shared Team Repository and Private Spaced Repetition Engine.</p>
+            </div>
+            <div class="header-meta">
+                <div class="metric-badge"><i class='bx bxs-time-five' style="color:var(--neon-blue)"></i> Runtime: <span id="sessionTimerDisplayClock">00:00</span></div>
+                
+                <div class="system-utility-cluster">
+                    <button class="utility-action-trigger" id="universalThemeTogglerBtn" onclick="toggleThemeConfiguration()">
+                        <i class='bx bxs-moon' id="headerThemeIcon"></i> <span id="headerThemeText">Light UI</span>
+                    </button>
+                    <button class="utility-action-trigger logout-accent" id="universalLogoutBtn" style="display:none;" onclick="executeLogoutSequence()">
+                        <i class='bx bx-log-out-circle'></i> <span>Disconnect</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="workspaceRootHook"></div>
+    </main>
+
+    <script>
+        // --- Supabase Client Initialization ---
+        const NEXT_PUBLIC_SUPABASE_URL = "https://wcyalhxdnuevsifbmpaq.supabase.co";
+        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_q0uaizSmv1flqz57zBBiPg_llai_9Jm";
+        const supabaseClient = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
+        // --- Injected Target Curriculum Registry Matrix ---
+        const SYSTEM_DEFAULT_CURRICULUMS = {
+            "General Education": [
+                "English", 
+                "Filipino", 
+                "Art Appreciation", 
+                "Contemporary World", 
+                "Reading in Philippine History", 
+                "Life and Works of Rizal", 
+                "Science", 
+                "Ethics and Understanding the Self", 
+                "Mathematics"
+            ],
+            "Professional Education": [
+                "Foundation of the Teaching Learning Process - The Teacher, School Culture and Organizational Leadership", 
+                "The Professional Teacher", 
+                "The Teacher and the School Curriculum OBE, K12, New Curriculum/Building and Enhancing New Literacies across the Curriculum", 
+                "Methods and Strategies of Teaching", 
+                "Technology for Teaching and Learning", 
+                "The Child and Adolescent Learners and Learning Principles", 
+                "Facilitating Learners Centered Teaching", 
+                "Assessment of Learning", 
+                "Field Study and Teaching Internship/Action Research", 
+                "Foundations of Special and Inclusive Educational activities"
+            ],
+            "Major Subjects": [
+                "Electrical Technology",
+                "Garments"
+            ]
+        };
+
+        const BIBLE_VERSES_POOL = [
+            { txt: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+            { txt: "Commit your actions to the Lord, and your plans will succeed.", ref: "Proverbs 16:3" },
+            { txt: "Be strong and courageous. Do not be afraid; do not be discouraged.", ref: "Joshua 1:9" }
+        ];
+
+        let systemState = {
+            globalDeck: [], 
+            schedules: [], 
+            notes: [], 
+            announcements: [],
+            activityLogs: [],
+            curriculumRegistry: JSON.parse(JSON.stringify(SYSTEM_DEFAULT_CURRICULUMS)), 
+            globalProgressCounter: 0,
+            cardSrmProgressData: {} 
+        };
+
+        let activeClientSession = {
+            activeUser: null,
+            activeWorkspace: 'dashboard',
+            selectedCategory: null,
+            selectedSubject: null,
+            activeDeckPointer: 0,
+            activeDeckStack: [],
+            arenaFlipped: false,
+            arenaShuffle: false,
+            arenaSubView: 'study',
+            editingCardId: null
+        };
+
+        let authMode = 'login';
+        let pomoState = { minutes: 25, seconds: 0, intervalInstance: null, activeMode: 'work' };
+        let globalSessionTimerClock = 0;
+
+        window.onload = async function() {
+            initializeThemeStateEngine();
+            startGlobalSessionTrackingClock();
+            bootstrapLocalState();
+            await checkSupabaseSession();
+        };
+
+        function switchAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('tabLogin').classList.remove('active');
+            document.getElementById('tabSignup').classList.remove('active');
+            if(mode === 'login') {
+                document.getElementById('tabLogin').classList.add('active');
+                document.getElementById('authSubmitBtn').innerText = "Initialize Session Vector";
+            } else {
+                document.getElementById('tabSignup').classList.add('active');
+                document.getElementById('authSubmitBtn').innerText = "Register New Node Access";
+            }
+        }
+
+        async function executeAuthenticationPipeline() {
+            let email = document.getElementById('authEmail').value.trim();
+            let password = document.getElementById('authPassword').value;
+            
+            if(!email || !password) return alert("System Auth Fault: Credentials missing.");
+            document.getElementById('authSubmitBtn').innerText = "Verifying Protocol...";
+
+            let result;
+            if(authMode === 'login') {
+                result = await supabaseClient.auth.signInWithPassword({ email, password });
+            } else {
+                result = await supabaseClient.auth.signUp({ email, password });
+            }
+
+            if(result.error) {
+                alert("Auth Rejection: " + result.error.message);
+                document.getElementById('authSubmitBtn').innerText = authMode === 'login' ? "Initialize Session Vector" : "Register New Node Access";
+            } else {
+                if(authMode === 'signup' && !result.data.session) {
+                    alert("Registration Logged. Check email for verification matrix if active.");
+                    switchAuthMode('login');
+                } else {
+                    spawnToastNotification("Portal Activated", "Secure pipeline access granted.", 'bxs-lock-open-alt');
+                    await checkSupabaseSession();
+                }
+            }
+        }
+
+        async function executeLogoutSequence() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('LMP_SESSION_RUNTIME'); 
+            window.location.reload();
+        }
+
+        async function checkSupabaseSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                activeClientSession.activeUser = session.user;
+                document.getElementById('authOverlay').style.opacity = '0';
+                setTimeout(() => { document.getElementById('authOverlay').style.display = 'none'; }, 300);
+                
+                document.getElementById('navUserBadge').innerText = session.user.email.split('@')[0];
+                document.getElementById('navRoleBadge').innerText = "Authenticated Member";
+                document.getElementById('universalLogoutBtn').style.display = 'inline-flex';
+                
+                await fetchGlobalFlashcardsDataset();
+                initializeRealtimeSupabaseSubscriptions();
+                routeWorkspace('dashboard');
+            } else {
+                document.getElementById('authOverlay').style.display = 'flex';
+                document.getElementById('universalLogoutBtn').style.display = 'none';
+            }
+        }
+
+        function bootstrapLocalState() {
+            if(localStorage.getItem('LMP_LOCAL_CACHE_v6')) {
+                let cache = JSON.parse(localStorage.getItem('LMP_LOCAL_CACHE_v6'));
+                systemState.schedules = cache.schedules || [];
+                systemState.notes = cache.notes || [];
+                systemState.cardSrmProgressData = cache.cardSrmProgressData || {};
+                systemState.globalProgressCounter = cache.globalProgressCounter || 0;
+                
+                systemState.curriculumRegistry = cache.curriculumRegistry || JSON.parse(JSON.stringify(SYSTEM_DEFAULT_CURRICULUMS));
+                systemState.announcements = cache.announcements || [];
+            }
+        }
+
+        function commitLocalStatePersistence() {
+            let cacheObj = {
+                schedules: systemState.schedules,
+                notes: systemState.notes,
+                cardSrmProgressData: systemState.cardSrmProgressData,
+                globalProgressCounter: systemState.globalProgressCounter,
+                curriculumRegistry: systemState.curriculumRegistry,
+                announcements: systemState.announcements
+            };
+            localStorage.setItem('LMP_LOCAL_CACHE_v6', JSON.stringify(cacheObj));
+        }
+
+        async function fetchGlobalFlashcardsDataset() {
+            const { data, error } = await supabaseClient.from('flashcards').select('*');
+            if(!error && data) {
+                systemState.globalDeck = data;
+            } else {
+                console.error("Data Sync Failure:", error);
+            }
+        }
+
+        function initializeRealtimeSupabaseSubscriptions() {
+            supabaseClient.channel('public:flashcards')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'flashcards' }, payload => {
+                    if (payload.eventType === 'INSERT') {
+                        if(!systemState.globalDeck.find(c => c.id === payload.new.id)) {
+                            systemState.globalDeck.push(payload.new);
+                        }
+                        systemState.activityLogs.push({ text: `Matrix expanded: New card in [${payload.new.subject}]`, time: new Date().toLocaleTimeString() });
+                    }
+                    if (payload.eventType === 'DELETE') {
+                        systemState.globalDeck = systemState.globalDeck.filter(c => c.id !== payload.old.id);
+                        systemState.activityLogs.push({ text: `Node ID [${payload.old.id}] pruned globally.`, time: new Date().toLocaleTimeString() });
+                    }
+                    if (payload.eventType === 'UPDATE') {
+                        let idx = systemState.globalDeck.findIndex(c => c.id === payload.new.id);
+                        if (idx > -1) systemState.globalDeck[idx] = payload.new;
+                    }
+                    refreshWorkspaceUI();
+                }).subscribe();
+        }
+
+        function playInteractiveFlipAudioChime(frequency, duration, type = 'sine') {
+            try {
+                let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillatorNode = audioContext.createOscillator();
+                let gainNode = audioContext.createGain();
+                
+                oscillatorNode.type = type;
+                oscillatorNode.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+                
+                oscillatorNode.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillatorNode.start();
+                oscillatorNode.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log("Audio pipeline configuration bypass context initialization restriction rules.");
+            }
+        }
+
+        function routeWorkspace(target, args = {}) {
+            activeClientSession.activeWorkspace = target;
+            document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-bar .mobile-nav-item').forEach(m => m.classList.remove('active'));
+            
+            let titleNode = document.getElementById('workspaceMainHeaderTitle');
+            let descNode = document.getElementById('workspaceMainHeaderDesc');
+            let rootNode = document.getElementById('workspaceRootHook');
+
+            let mapIds = {'dashboard': 'dash', 'hub': 'hub', 'schedules': 'schedules', 'notes': 'notes', 'admin': 'admin'};
+            let activeId = mapIds[target] || 'hub';
+
+            let dNode = document.getElementById(`m-${activeId}`);
+            if(dNode) dNode.classList.add('active');
+            let mNode = document.getElementById(`mb-${activeId}`);
+            if(mNode) mNode.classList.add('active');
+
+            switch(target) {
+                case 'dashboard':
+                    titleNode.innerText = "Dashboard Performance Center";
+                    descNode.innerText = "Consolidated global metrics vectors, core activities, and mission statistics tracking modules.";
+                    renderDashboardView(rootNode);
+                    break;
+                case 'hub':
+                    titleNode.innerText = "Study Hub Matrix Core";
+                    descNode.innerText = "Isolate deep conceptual domains groupings to execute structural memory paths training.";
+                    renderHubView(rootNode);
+                    break;
+                case 'subjectsList':
+                    activeClientSession.selectedCategory = args.category;
+                    titleNode.innerText = `${args.category} Tracks`;
+                    descNode.innerText = "Map customized subject specialization parameters pipelines.";
+                    renderSubjectsListView(rootNode, args.category);
+                    break;
+                case 'arena':
+                    activeClientSession.selectedCategory = args.category || activeClientSession.selectedCategory;
+                    activeClientSession.selectedSubject = args.subject;
+                    activeClientSession.activeDeckPointer = 0;
+                    activeClientSession.arenaFlipped = false;
+                    activeClientSession.arenaSubView = 'study';
+                    titleNode.innerText = `Active Recall Arena`;
+                    descNode.innerText = `Subject Domain: ${args.subject}`;
+                    compileIndependentPersonalSrmStack(args.subject);
+                    renderArenaView(rootNode);
+                    break;
+                case 'schedules':
+                    titleNode.innerText = "Schedules & Lifecycle Matrix";
+                    descNode.innerText = "Consolidated timeline milestones tracking parameter boundaries.";
+                    renderSchedulesView(rootNode);
+                    break;
+                case 'notes':
+                    titleNode.innerText = "Shared Conceptual Notebook Terminal";
+                    descNode.innerText = "Asynchronous open text repository compilation workspace.";
+                    renderNotesView(rootNode);
+                    break;
+                case 'admin':
+                    titleNode.innerText = "Master Control Operations Deck";
+                    descNode.innerText = "Administrative structural variables modifications interface panel.";
+                    renderAdminPanelWorkspaceView(rootNode);
+                    break;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function refreshWorkspaceUI() {
+            if(!activeClientSession.activeUser) return;
+            routeWorkspace(activeClientSession.activeWorkspace, {
+                category: activeClientSession.selectedCategory,
+                subject: activeClientSession.selectedSubject
+            });
+        }
+
+        function renderDashboardView(target) {
+            let totalCardsCount = systemState.globalDeck.length;
+            let dueSrmCardsCount = 0;
+            
+            systemState.globalDeck.forEach(c => {
+                let cardProg = systemState.cardSrmProgressData[c.id];
+                if(!cardProg || new Date(cardProg.nextReview) <= new Date()) dueSrmCardsCount++;
+            });
+
+            let currentDailyTargetProgressValue = Math.min((systemState.globalProgressCounter / 200) * 100, 100);
+            let verse = BIBLE_VERSES_POOL[Math.floor(Date.now() / 86400000) % BIBLE_VERSES_POOL.length];
+
+            let actionsListHTML = systemState.activityLogs.slice(-6).reverse().map(l => `
+                <div class="activity-node">
+                    <div>${escapeStringOutputMarkup(l.text)}</div>
+                    <span>${l.time}</span>
+                </div>
+            `).join('');
+
+            target.innerHTML = `
+                <div class="dash-grid">
+                    <div>
+                        <div class="stats-strip">
+                            <div class="stat-node glass-panel">
+                                <p>Daily Workspace Progress</p>
+                                <h3>${systemState.globalProgressCounter} / 200</h3>
+                                <div class="progress-lane"><div class="progress-fill" style="width:${currentDailyTargetProgressValue}%"></div></div>
+                            </div>
+                            <div class="stat-node glass-panel">
+                                <p>SRS Queue Due</p>
+                                <h3 style="color:${dueSrmCardsCount > 0 ? 'var(--neon-blue)' : 'var(--text-main)'}">${dueSrmCardsCount} Tasks</h3>
+                            </div>
+                            <div class="stat-node glass-panel">
+                                <p>Global Pool Sizes</p>
+                                <h3>${totalCardsCount} Cards</h3>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel" style="padding:24px; margin-bottom:28px; border-left:4px solid var(--neon-blue); background: linear-gradient(135deg, rgba(0, 242, 254, 0.03), transparent);">
+                            <div style="font-size:11px; font-weight:800; color:var(--neon-blue); letter-spacing:1px; margin-bottom:8px; text-transform:uppercase;"><i class='bx bxs-quote-left'></i> Scriptural Fortitude Anchor</div>
+                            <p style="font-style:italic; font-size:16px; font-weight:600; line-height:1.5; color:var(--text-main)">“${verse.txt}”</p>
+                            <span style="display:block; margin-top:6px; font-weight:800; font-size:12px; color:var(--text-sub)">— ${verse.ref}</span>
+                        </div>
+
+                        <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Curriculum Cluster Matrix</h3>
+                        <div class="category-matrix">
+                            <div class="matrix-card glass-panel" onclick="routeWorkspace('subjectsList', {category: 'General Education'})">
+                                <h4>General Education</h4><p>Core Curriculum Vectors Stack</p>
+                            </div>
+                            <div class="matrix-card glass-panel prof" onclick="routeWorkspace('subjectsList', {category: 'Professional Education'})">
+                                <h4>Professional Education</h4><p>Pedagogical Theory Application Matrices</p>
+                            </div>
+                            <div class="matrix-card glass-panel major" onclick="routeWorkspace('subjectsList', {category: 'Major Subjects'})">
+                                <h4>Major Subjects</h4><p>Technical Specialization Domains Lanes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-sidebar-panel">
+                        <div class="widget-box glass-panel">
+                            <h3><i class='bx bxs-bolt-circle' style="color:var(--neon-blue)"></i> Live Events Buffer</h3>
+                            <div class="activity-stream">${actionsListHTML || '<p style="color:var(--text-sub); font-size:13px;">No activities recorded.</p>'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHubView(target) {
+            target.innerHTML = `
+                <div class="category-matrix" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <div class="matrix-card glass-panel" style="padding:32px;" onclick="routeWorkspace('subjectsList', {category: 'General Education'})">
+                        <h4 style="font-size:20px; margin-bottom:8px;">General Education</h4><p>Foundational syllabus modules assessment configurations registry.</p>
+                    </div>
+                    <div class="matrix-card glass-panel prof" style="padding:32px;" onclick="routeWorkspace('subjectsList', {category: 'Professional Education'})">
+                        <h4 style="font-size:20px; margin-bottom:8px;">Professional Education</h4><p>Instructional design metrics and pedagogical core paradigms tracking pathways.</p>
+                    </div>
+                    <div class="matrix-card glass-panel major" style="padding:32px;" onclick="routeWorkspace('subjectsList', {category: 'Major Subjects'})">
+                        <h4 style="font-size:20px; margin-bottom:8px;">Major Subjects</h4><p>Specialization domain mechanics data tracking models.</p>
+                    </div>
+                    <div class="matrix-card glass-panel" style="padding:32px; border-left-color: var(--danger);" onclick="routeWorkspace('arena', {subject: 'Cross-Domain Randomization', category: 'Random Mix'})">
+                        <h4 style="font-size:20px; margin-bottom:8px;">Random Mix</h4><p>Dynamic cross-domain assessment for comprehensive recall testing.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSubjectsListView(target, category) {
+            let subjectsArray = systemState.curriculumRegistry[category] || [];
+            let htmlPayloadString = `
+                <div style="margin-bottom:24px;">
+                    <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main);" onclick="routeWorkspace('hub')">
+                        <i class='bx bx-chevron-left'></i> Return to Domains Matrix
+                    </button>
+                </div>
+                <div class="subject-grid">
+            `;
+
+            subjectsArray.forEach(s => {
+                let totalCardsCount = systemState.globalDeck.filter(c => c.subject === s).length;
+                let dueCardsCount = systemState.globalDeck.filter(c => {
+                    if (c.subject !== s) return false;
+                    let prog = systemState.cardSrmProgressData[c.id];
+                    return (!prog || new Date(prog.nextReview) <= new Date());
+                }).length;
+
+                htmlPayloadString += `
+                    <div class="subject-node glass-panel" onclick="routeWorkspace('arena', {subject: '${s.replace(/'/g, "\\'")}'})">
+                        <div style="flex-grow: 1; padding-right: 12px;">
+                            <h4 style="font-size:16px; font-weight:800;">${s}</h4>
+                            <p style="font-size:13px; color:var(--text-sub); font-weight:600; margin-top:6px;">
+                                Status: <span style="color:${dueCardsCount>0?'var(--danger)':'var(--prof-ed)'}">${dueCardsCount} Due Tasks</span> / ${totalCardsCount} Total Nodes
+                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class='bx bx-chevrons-right' style="font-size:22px; color:var(--neon-blue)"></i>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlPayloadString += `</div>`;
+            target.innerHTML = htmlPayloadString;
+        }
+
+        function compileIndependentPersonalSrmStack(subject) {
+            if (subject === 'Cross-Domain Randomization') {
+                let dueStack = systemState.globalDeck.filter(c => {
+                    let prog = systemState.cardSrmProgressData[c.id];
+                    return (!prog || new Date(prog.nextReview) <= new Date());
+                });
+                let basePool = dueStack.length > 0 ? dueStack : systemState.globalDeck;
+                activeClientSession.activeDeckStack = [...basePool].sort(() => 0.5 - Math.random()).slice(0, 30);
+                return;
+            }
+
+            let allMatchedSubjectCards = systemState.globalDeck.filter(c => c.subject === subject);
+            let dueStack = allMatchedSubjectCards.filter(c => {
+                let prog = systemState.cardSrmProgressData[c.id];
+                return (!prog || new Date(prog.nextReview) <= new Date());
+            });
+
+            activeClientSession.activeDeckStack = dueStack.length > 0 ? dueStack : allMatchedSubjectCards;
+            if(activeClientSession.arenaShuffle) {
+                activeClientSession.activeDeckStack.sort(() => Math.random() - 0.5);
+            }
+        }
+
+        function setArenaSubView(view) {
+            activeClientSession.arenaSubView = view;
+            renderArenaView(document.getElementById('workspaceRootHook'));
+        }
+
+        function renderArenaManageView() {
+            let cat = activeClientSession.selectedCategory;
+            let sub = activeClientSession.selectedSubject;
+            let compiledFilteredSourceDeckArray = systemState.globalDeck.filter(c => c.subject === sub);
+
+            let sharedDeckItemsListHTML = compiledFilteredSourceDeckArray.map(c => {
+                let isOwner = c.user_id === activeClientSession.activeUser.id;
+                let actionsHtml = isOwner ? `
+                    <button class="icon-trigger-btn btn-edit" title="Mutate node configuration" onclick="executePrepareEditCardArchitectureSequence('${c.id}')">
+                        <i class='bx bx-pencil'></i>
+                    </button>
+                    <button class="icon-trigger-btn btn-trash" title="Prune configuration from database" onclick="executeSafeCardPruningArchitectureSequence('${c.id}')">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                ` : `<span style="font-size:11px; color:var(--text-sub); font-weight:700;"><i class='bx bx-lock-alt'></i> Node Locked</span>`;
+
+                return `
+                <div class="list-card-item glass-panel">
+                    <div class="list-card-contents">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <span class="meta-tag" style="color:var(--neon-blue); border-color:rgba(0,242,254,0.2)">${c.category}</span>
+                            <span class="meta-tag" style="font-family:var(--font-mono);">${c.subject}</span>
+                            <span style="font-size:12px; font-weight:600; color:var(--text-sub);"><i class='bx bx-info-circle'></i> Access: <b>${isOwner ? "Authorized" : "Read-Only"}</b></span>
+                        </div>
+                        <h4 style="font-size:15px; margin-top:10px; font-weight:700; line-height:1.4;">${escapeStringOutputMarkup(c.question)}</h4>
+                        <p style="font-size:14px; color:var(--neon-blue); margin-top:6px; font-weight:600; font-family:var(--font-mono)">Key: ${escapeStringOutputMarkup(c.answer)}</p>
+                    </div>
+                    <div class="list-actions" style="display:flex; flex-direction:column; gap:8px;">
+                        ${actionsHtml}
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="form-canvas glass-panel" id="deckCentralInputFormTarget">
+                    <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">
+                        <i class='bx bx-plus-circle' style="color:var(--neon-blue)"></i> <span id="formTitleHeaderAction">Add Flashcard to ${sub}</span>
+                    </h3>
+                    <input type="hidden" id="cardInjectInputCategory" value="${cat || 'Major Subjects'}">
+                    <input type="hidden" id="cardInjectInputSubject" value="${sub}">
+                    
+                    <div class="input-block" style="margin-bottom:16px;">
+                        <label>Assessment Question Vector Text Context</label>
+                        <textarea id="cardInjectInputQuestion" style="height:72px;" placeholder="Isolate precise parameter guidelines..."></textarea>
+                    </div>
+                    <div class="input-block" style="margin-bottom:20px;">
+                        <label>Target Resolution Keys Matrix Correction Data</label>
+                        <input type="text" id="cardInjectInputAnswer" placeholder="Specify baseline validation keys...">
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="action-btn" id="commitFormActionBtn" onclick="executeCommitNewFlashcardToGlobalSharedRegistryDataStack()">
+                            Register Memory Element <i class='bx bx-layer-plus' ></i>
+                        </button>
+                        <button class="action-btn" style="background:var(--input-bg); border:1px solid var(--border); color:var(--text-sub); display:none;" id="cancelEditFormActionBtn" onclick="executeCancelEditArchitectureSequence()">
+                            Abort Override
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding:16px; margin-top:24px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:space-between;">
+                    <div style="font-size:13px; font-weight:700; color:var(--text-main)">Subject Deck Node Registry</div>
+                    <div style="font-size:12px; font-weight:700; color:var(--text-sub); font-family:var(--font-mono)">TOTAL CARDS: ${compiledFilteredSourceDeckArray.length}</div>
+                </div>
+
+                <div class="flex-list">${sharedDeckItemsListHTML || '<p style="color:var(--text-sub); padding:32px; font-weight:600; text-align:center;">No memory cards created yet for this subject.</p>'}</div>
+            `;
+        }
+
+        function renderArenaView(target) {
+            let sub = activeClientSession.selectedSubject;
+            let isRandom = sub === 'Cross-Domain Randomization';
+            
+            if(!activeClientSession.arenaSubView) {
+                activeClientSession.arenaSubView = 'study';
+            }
+
+            let isStudy = activeClientSession.arenaSubView === 'study';
+
+            let viewToggleHTML = isRandom ? '' : `
+                <div style="display:flex; gap:10px; margin-bottom:24px; background:var(--sidebar); padding:6px; border-radius:14px; border:1px solid var(--border); width:100%; max-width:680px; margin-left:auto; margin-right:auto;">
+                    <button class="action-btn" style="flex:1; font-size:13px; transition:all 0.2s; ${isStudy ? 'background:linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color:#030712;' : 'background:transparent; border:1px solid transparent; color:var(--text-sub);'}" onclick="setArenaSubView('study')">
+                        <i class='bx bx-brain'></i> Study Mode
+                    </button>
+                    <button class="action-btn" style="flex:1; font-size:13px; transition:all 0.2s; ${!isStudy ? 'background:linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color:#030712;' : 'background:transparent; border:1px solid transparent; color:var(--text-sub);'}" onclick="setArenaSubView('manage')">
+                        <i class='bx bx-cog'></i> Manage Cards
+                    </button>
+                </div>
+            `;
+            
+            let backAction = isRandom ? "routeWorkspace('hub')" : `routeWorkspace('subjectsList', {category: '${activeClientSession.selectedCategory}'})`;
+            let backLabel = isRandom ? "Back to Matrix Core" : "Back to Node Tracks";
+
+            if (!isStudy && !isRandom) {
+                target.innerHTML = `
+                    <div class="arena-canvas">
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main); align-self: flex-start;" onclick="${backAction}">
+                            <i class='bx bx-left-arrow-alt'></i> ${backLabel}
+                        </button>
+                        ${viewToggleHTML}
+                        ${renderArenaManageView()}
+                    </div>
+                `;
+                if(activeClientSession.editingCardId) {
+                    hydrateFormForEditingNode(activeClientSession.editingCardId);
+                }
+                return;
+            }
+
+            let stack = activeClientSession.activeDeckStack;
+            let ptr = activeClientSession.activeDeckPointer;
+
+            if(stack.length === 0) {
+                target.innerHTML = `
+                    <div class="arena-canvas">
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main); align-self: flex-start;" onclick="${backAction}">
+                            <i class='bx bx-left-arrow-alt'></i> ${backLabel}
+                        </button>
+                        ${viewToggleHTML}
+                        <div style="text-align:center; padding:56px 24px; width:100%;" class="glass-panel">
+                            <i class='bx bx-badge-check' style="font-size:4rem; color:var(--prof-ed); display:block; margin-bottom:16px;"></i>
+                            <h3 style="font-size:20px; font-weight:800;">Conceptual Node Vector Clear</h3>
+                            <p style="color:var(--text-sub); font-size:14px; margin-top:6px;">No card profiles require urgent repetition tracking review matching this focus.</p>
+                            ${!isRandom ? `<button class="action-btn" style="margin-top:24px;" onclick="setArenaSubView('manage')">+ Inject Focus Memory Element</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let card = stack[ptr];
+            let isFavorite = systemState.cardSrmProgressData[card.id]?.favorite || false;
+            let creatorTag = card.user_id === activeClientSession.activeUser.id ? "Your Node" : "Shared Global Matrix";
+
+            target.innerHTML = `
+                <div class="arena-canvas">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main);" onclick="${backAction}">
+                            <i class='bx bx-left-arrow-alt'></i> ${backLabel}
+                        </button>
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main);" onclick="toggleArenaShuffleExecutionMode()">
+                            <i class='bx bx-shuffle' style="${activeClientSession.arenaShuffle || isRandom ? 'color:var(--neon-blue)':''}"></i> Shuffle Stack
+                        </button>
+                    </div>
+
+                    ${viewToggleHTML}
+
+                    <div class="viewport-3d ${activeClientSession.arenaFlipped ? 'flipped':''}" id="flashcardViewportStageNode" onclick="executeCardViewportRotationFlipTrigger()">
+                        <div class="card-rotator">
+                            <div class="face-front">
+                                <div class="card-meta-strip">
+                                    <span class="meta-tag" style="border-color:var(--neon-blue); color:var(--neon-blue);">${card.category}</span>
+                                    ${isRandom ? `<span class="meta-tag" style="border-color:var(--neon-purple); color:var(--neon-purple);">${card.subject}</span>` : ''}
+                                </div>
+                                <div class="fav-node" onclick="executeTogglePersonalCardFaveAnchor(event, '${card.id}')">
+                                    <i class='bx ${isFavorite ? 'bxs-star active':'bx-star'}' style="font-size:24px; cursor:pointer;"></i>
+                                </div>
+                                <div class="card-text-space">${escapeStringOutputMarkup(card.question)}</div>
+                                <div class="attribution-tag" style="margin-top:24px; font-size:12px; color:var(--text-sub);"><i class='bx bx-layer'></i> Context Origin: <b>${creatorTag}</b></div>
+                                <p style="position:absolute; bottom:22px; right:24px; font-size:11px; font-weight:800; color:var(--text-sub);">[ TAP TO VERIFY RESPONSE KEY ]</p>
+                            </div>
+                            <div class="face-back">
+                                <div style="font-size:11px; font-weight:800; color:var(--neon-blue); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;"><i class='bx bx-check-shield'></i> Verification Key Model</div>
+                                <div class="card-text-space" style="color: var(--neon-blue); font-size:1.55rem;">${escapeStringOutputMarkup(card.answer)}</div>
+                                <p style="position:absolute; bottom:22px; right:24px; font-size:11px; font-weight:800; color:var(--text-sub);">[ TAP TO FLIP FOCUS INVERSION ]</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="arenaAnkiGradingDockControlBlock" style="visibility:${activeClientSession.arenaFlipped?'visible':'hidden'}; opacity:${activeClientSession.arenaFlipped?'1':'0'}; transition:all 0.2s;">
+                        <div class="grading-dock">
+                            <button class="grade-btn g-forgot" onclick="processCardLogarithmicSrmSchedulingEvaluation('${card.id}', 0)">Forgot (0)</button>
+                            <button class="grade-btn g-hard" onclick="processCardLogarithmicSrmSchedulingEvaluation('${card.id}', 2)">Hard (2)</button>
+                            <button class="grade-btn g-good" onclick="processCardLogarithmicSrmSchedulingEvaluation('${card.id}', 4)">Good (4)</button>
+                            <button class="grade-btn g-easy" onclick="processCardLogarithmicSrmSchedulingEvaluation('${card.id}', 5)">Easy (5)</button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main); flex:1;" onclick="shiftManualArenaPointerPointerValue(-1)"><i class='bx bx-chevron-left'></i> Previous</button>
+                        <div style="font-size:12px; font-weight:700; color:var(--text-sub); font-family:var(--font-mono); white-space:nowrap;">STACK INDEX: ${ptr + 1} / ${stack.length}</div>
+                        <button class="action-btn" style="background:var(--sidebar); border:1px solid var(--border); color:var(--text-main); flex:1;" onclick="shiftManualArenaPointerPointerValue(1)">Advance Shift <i class='bx bx-chevron-right'></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function executeCardViewportRotationFlipTrigger() {
+            activeClientSession.arenaFlipped = !activeClientSession.arenaFlipped;
+            let dock = document.getElementById('arenaAnkiGradingDockControlBlock');
+            let stage = document.getElementById('flashcardViewportStageNode');
+            if(!dock || !stage) return;
+            
+            if(activeClientSession.arenaFlipped) {
+                playInteractiveFlipAudioChime(580, 0.12, 'triangle');
+                stage.classList.add('flipped');
+                dock.style.visibility = "visible";
+                dock.style.opacity = "1";
+            } else {
+                playInteractiveFlipAudioChime(440, 0.08, 'sine');
+                stage.classList.remove('flipped');
+                dock.style.visibility = "hidden";
+                dock.style.opacity = "0";
+            }
+        }
+
+        function shiftManualArenaPointerPointerValue(direction) {
+            let len = activeClientSession.activeDeckStack.length;
+            if (len === 0) return;
+            activeClientSession.activeDeckPointer += direction;
+            if(activeClientSession.activeDeckPointer >= len) activeClientSession.activeDeckPointer = 0;
+            if(activeClientSession.activeDeckPointer < 0) activeClientSession.activeDeckPointer = len - 1;
+            activeClientSession.arenaFlipped = false;
+            renderArenaView(document.getElementById('workspaceRootHook'));
+        }
+
+        function toggleArenaShuffleExecutionMode() {
+            activeClientSession.arenaShuffle = !activeClientSession.arenaShuffle;
+            compileIndependentPersonalSrmStack(activeClientSession.selectedSubject);
+            activeClientSession.activeDeckPointer = 0;
+            activeClientSession.arenaFlipped = false;
+            renderArenaView(document.getElementById('workspaceRootHook'));
+        }
+
+        function executeTogglePersonalCardFaveAnchor(event, cardId) {
+            event.stopPropagation();
+            if(!systemState.cardSrmProgressData[cardId]) {
+                systemState.cardSrmProgressData[cardId] = { repetitions: 0, interval: 0, easeFactor: 2.5, nextReview: new Date().toISOString(), favorite: false };
+            }
+            systemState.cardSrmProgressData[cardId].favorite = !systemState.cardSrmProgressData[cardId].favorite;
+            commitLocalStatePersistence();
+            renderArenaView(document.getElementById('workspaceRootHook'));
+        }
+
+        function processCardLogarithmicSrmSchedulingEvaluation(cardId, score) {
+            if(!systemState.cardSrmProgressData[cardId]) {
+                systemState.cardSrmProgressData[cardId] = { repetitions: 0, interval: 0, easeFactor: 2.5, nextReview: new Date().toISOString(), favorite: false };
+            }
+
+            let dataObj = systemState.cardSrmProgressData[cardId];
+            if(score < 3) {
+                dataObj.repetitions = 0;
+                dataObj.interval = 1;
+                playInteractiveFlipAudioChime(220, 0.25, 'sawtooth');
+            } else {
+                if(dataObj.repetitions === 0) dataObj.interval = 1;
+                else if(dataObj.repetitions === 1) dataObj.interval = 4;
+                else dataObj.interval = Math.ceil(dataObj.interval * dataObj.easeFactor);
+                dataObj.repetitions++;
+                playInteractiveFlipAudioChime(880, 0.15, 'sine');
+            }
+
+            dataObj.easeFactor = dataObj.easeFactor + (0.1 - (5 - score) * (0.08 + (5 - score) * 0.02));
+            if(dataObj.easeFactor < 1.3) dataObj.easeFactor = 1.3;
+
+            let dateHorizon = new Date();
+            dateHorizon.setDate(dateHorizon.getDate() + dataObj.interval);
+            dataObj.nextReview = dateHorizon.toISOString();
+
+            systemState.globalProgressCounter++;
+            
+            commitLocalStatePersistence();
+            spawnToastNotification("Interval Fixed", `Next check sequence configured at: ${dataObj.interval} Days.`, 'bxs-badge-check');
+
+            activeClientSession.activeDeckStack.splice(activeClientSession.activeDeckPointer, 1);
+            if(activeClientSession.activeDeckStack.length === 0) {
+                spawnToastNotification("Module Complete", "All current stack items processed.", 'bx-award');
+                routeWorkspace('dashboard');
+            } else {
+                if(activeClientSession.activeDeckPointer >= activeClientSession.activeDeckStack.length) activeClientSession.activeDeckPointer = 0;
+                activeClientSession.arenaFlipped = false;
+                renderArenaView(document.getElementById('workspaceRootHook'));
+            }
+        }
+
+        async function executeCommitNewFlashcardToGlobalSharedRegistryDataStack() {
+            let cat = document.getElementById('cardInjectInputCategory').value;
+            let sub = document.getElementById('cardInjectInputSubject').value;
+            let q = document.getElementById('cardInjectInputQuestion').value.trim();
+            let a = document.getElementById('cardInjectInputAnswer').value.trim();
+
+            if(!q || !a || !sub) return alert("Validation Check Failure: All context components must be populated.");
+            
+            document.getElementById('commitFormActionBtn').innerText = "Processing Matrix Push...";
+
+            let payload = {
+                category: cat,
+                subject: sub,
+                question: q,
+                answer: a,
+                user_id: activeClientSession.activeUser.id
+            };
+
+            if(activeClientSession.editingCardId) {
+                const { data, error } = await supabaseClient.from('flashcards').update(payload).eq('id', activeClientSession.editingCardId).select();
+                if(error) alert("Write Error: " + error.message);
+                else {
+                    if (data && data.length > 0) {
+                        let idx = systemState.globalDeck.findIndex(c => c.id === activeClientSession.editingCardId);
+                        if (idx > -1) systemState.globalDeck[idx] = data[0];
+                    }
+                    spawnToastNotification("Node Updated", "Card matrix variables overwritten.", 'bxs-cloud-upload');
+                    executeCancelEditArchitectureSequence();
+                }
+            } else {
+                const { data, error } = await supabaseClient.from('flashcards').insert([payload]).select();
+                if(error) alert("Write Error: " + error.message);
+                else {
+                    if (data && data.length > 0) {
+                        if(!systemState.globalDeck.find(c => c.id === data[0].id)) {
+                            systemState.globalDeck.push(data[0]);
+                        }
+                    }
+                    spawnToastNotification("Element Saved", "Flashcard appended cleanly.", 'bxs-cloud-upload');
+                    document.getElementById('cardInjectInputQuestion').value = "";
+                    document.getElementById('cardInjectInputAnswer').value = "";
+                    document.getElementById('commitFormActionBtn').innerHTML = "Register Memory Element <i class='bx bx-layer-plus' ></i>";
+                    compileIndependentPersonalSrmStack(sub);
+                    renderArenaView(document.getElementById('workspaceRootHook'));
+                }
+            }
+        }
+
+        function executePrepareEditCardArchitectureSequence(cardId) {
+            activeClientSession.editingCardId = cardId;
+            renderArenaView(document.getElementById('workspaceRootHook'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hydrateFormForEditingNode(cardId) {
+            let card = systemState.globalDeck.find(c => c.id == cardId);
+            if(!card) return;
+            document.getElementById('formTitleHeaderAction').innerText = `Mutate Active Profile: ${cardId}`;
+            document.getElementById('cardInjectInputQuestion').value = card.question;
+            document.getElementById('cardInjectInputAnswer').value = card.answer;
+            document.getElementById('commitFormActionBtn').innerHTML = "Override Profile Baseline <i class='bx bx-check-double'></i>";
+            document.getElementById('cancelEditFormActionBtn').style.display = "inline-flex";
+            document.getElementById('deckCentralInputFormTarget').style.border = "1px solid var(--major)";
+        }
+
+        function executeCancelEditArchitectureSequence() {
+            activeClientSession.editingCardId = null;
+            renderArenaView(document.getElementById('workspaceRootHook'));
+        }
+
+        async function executeSafeCardPruningArchitectureSequence(cardId) {
+            if (confirm("Confirm structural card erasure from global persistence layers?")) {
+                const { error } = await supabaseClient.from('flashcards').delete().eq('id', cardId);
+                if(error) alert("Pruning Fault: " + error.message);
+                else {
+                    spawnToastNotification("Node Pruned", "Card profile removed from database clusters.", 'bx-trash-alt');
+                    compileIndependentPersonalSrmStack(activeClientSession.selectedSubject);
+                }
+            }
+        }
+
+        function renderSchedulesView(target) {
+            let itemsHTML = systemState.schedules.map(s => `
+                <div class="list-card-item glass-panel" style="border-left:4px solid var(--neon-purple)">
+                    <div class="list-card-contents">
+                        <h4 style="font-size:16px; font-weight:800; margin-top:2px;">${escapeStringOutputMarkup(s.title)}</h4>
+                        <p style="font-size:13px; color:var(--text-sub); font-weight:600; margin-top:4px;"><i class='bx bx-time' ></i> Target Horizon: <b>${s.date}</b></p>
+                    </div>
+                    <button class="icon-trigger-btn btn-trash" onclick="executeRemoveScheduleMatrixNodeItem(${s.id})"><i class='bx bx-x' ></i></button>
+                </div>
+            `).join('');
+
+            target.innerHTML = `
+                <div class="form-canvas glass-panel">
+                    <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Map Milestone Matrix Tracking Properties</h3>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px;">
+                        <div class="input-block">
+                            <label>Target Project Milestone Definition Label</label>
+                            <input type="text" id="schedInputTitle" placeholder="e.g., Core Licensing Matrix Review...">
+                        </div>
+                        <div class="input-block">
+                            <label>Execution Milestone Horizon Target Date</label>
+                            <input type="date" id="schedInputDate">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="executeCommitNewScheduleMatrixNodeItem()">Register Milestone Block <i class='bx bx-calendar-plus' ></i></button>
+                </div>
+                <div class="flex-list" style="margin-top:24px;">${itemsHTML || '<p style="color:var(--text-sub); font-weight:600; padding:16px; text-align:center;">No milestones configured.</p>'}</div>
+            `;
+        }
+
+        function executeCommitNewScheduleMatrixNodeItem() {
+            let title = document.getElementById('schedInputTitle').value.trim();
+            let date = document.getElementById('schedInputDate').value;
+            if(!title || !date) return alert("Validation Fault: Metric parameters cannot be blank.");
+
+            systemState.schedules.push({ id: Date.now(), title, date });
+            commitLocalStatePersistence();
+            renderSchedulesView(document.getElementById('workspaceRootHook'));
+        }
+
+        function executeRemoveScheduleMatrixNodeItem(id) {
+            systemState.schedules = systemState.schedules.filter(s => s.id !== id);
+            commitLocalStatePersistence();
+            renderSchedulesView(document.getElementById('workspaceRootHook'));
+        }
+
+        function renderNotesView(target) {
+            let notesCardsHTML = systemState.notes.map(n => `
+                <div class="glass-panel" style="padding:22px; position:relative;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; width:100%;">
+                        <div style="flex-grow:1; padding-right:40px;">
+                            <h4 style="font-size:16px; font-weight:800; letter-spacing:-0.2px;">${escapeStringOutputMarkup(n.title)}</h4>
+                            <span style="font-size:12px; color:var(--text-sub); font-weight:600;"><i class='bx bx-pencil' ></i> Synthesized On: ${n.date}</span>
+                        </div>
+                        <button class="icon-trigger-btn btn-trash" style="position:absolute; top:18px; right:18px;" onclick="executeDeleteNotebookEntryTokenRegistry(${n.id})"><i class='bx bx-trash' ></i></button>
+                    </div>
+                    <p style="font-size:14px; line-height:1.6; color:var(--text-sub); white-space:pre-wrap; background:rgba(0,0,0,0.04); padding:14px; border-radius:10px; border:1px solid var(--border); font-weight:500;">${escapeStringOutputMarkup(n.body)}</p>
+                </div>
+            `).join('');
+
+            target.innerHTML = `
+                <div class="form-canvas glass-panel">
+                    <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Archive Synthesized Concept Overviews</h3>
+                    <div class="input-block" style="margin-bottom:14px;"><label>Conceptual Focus Keyword Index Title</label><input type="text" id="noteInputTitle" placeholder="e.g., Schematic Diagram Bending Coefficients..."></div>
+                    <div class="input-block" style="margin-bottom:20px;"><label>Architectural Summary Text Body Data</label><textarea id="noteInputBody" style="height:120px;" placeholder="Compile operational parameters summary configurations blocks..."></textarea></div>
+                    <button class="action-btn" onclick="executeCommitNewNotebookEntryTokenRegistry()">Archive Note Entry <i class='bx bx-save' ></i></button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-top:24px;">${notesCardsHTML || '<p style="color:var(--text-sub); padding:16px; text-align:center; font-weight:600; grid-column:span 2;">Notebook directory buffer currently empty.</p>'}</div>
+            `;
+        }
+
+        function executeCommitNewNotebookEntryTokenRegistry() {
+            let title = document.getElementById('noteInputTitle').value.trim();
+            let body = document.getElementById('noteInputBody').value.trim();
+            if(!title || !body) return alert("Verification parameters failure: Notebook entries fields text required.");
+
+            systemState.notes.push({ id: Date.now(), author: "Platform Workspace", title, body, date: new Date().toLocaleDateString() });
+            commitLocalStatePersistence();
+            renderNotesView(document.getElementById('workspaceRootHook'));
+        }
+
+        function executeDeleteNotebookEntryTokenRegistry(id) {
+            if(confirm("Confirm deletion of note?")) {
+                systemState.notes = systemState.notes.filter(n => n.id !== id);
+                commitLocalStatePersistence();
+                renderNotesView(document.getElementById('workspaceRootHook'));
+            }
+        }
+
+        function renderAdminPanelWorkspaceView(target) {
+            let announcementListHTML = systemState.announcements.map(a => `
+                <div class="activity-node" style="border-left-color:var(--neon-purple); margin-bottom:8px; background:rgba(0,0,0,0.02)">
+                    <div style="font-weight:700; color:var(--text-main);">${escapeStringOutputMarkup(a.body)}</div>
+                    <span style="font-size:11px;">Broadcaster: ${a.author} | ${a.date}</span>
+                </div>
+            `).join('');
+
+            let categoryRegistrySelectOptionsHTML = Object.keys(systemState.curriculumRegistry).map(c => `<option value="${c}">${c}</option>`).join('');
+
+            target.innerHTML = `
+                <div class="admin-dashboard-container">
+                    <div class="dash-grid">
+                        <div>
+                            <div class="form-canvas glass-panel" style="margin-bottom:24px;">
+                                <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;"><i class='bx bx-book-bookmark' style="color:var(--neon-purple)"></i> Inject Dynamic Curriculum Focus Discipline</h3>
+                                <div class="form-grid">
+                                    <div class="input-block">
+                                        <label>Core Cluster Category Cluster</label>
+                                        <select id="adminInputCurriculumCategory">${categoryRegistrySelectOptionsHTML}</select>
+                                    </div>
+                                    <div class="input-block">
+                                        <label>New Subject Discipline Title Mapping Node</label>
+                                        <input type="text" id="adminInputCurriculumSubjectTitle" placeholder="e.g., Advanced Power Distribution Frameworks...">
+                                    </div>
+                                </div>
+                                <button class="action-btn" style="margin-top:8px;" onclick="executeAdministrativeInjectCurriculumSubject()">
+                                    Map New Subject Lane <i class='bx bx-folder-plus'></i>
+                                </button>
+                            </div>
+                            
+                            <div class="glass-panel" style="padding:22px;">
+                                <h3 style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;"><i class='bx bx-cog'></i> Framework State Reset Tools</h3>
+                                <p style="font-size:13px; color:var(--text-sub); margin-bottom:16px; font-weight:500;">Clear localized local reviews cache data buffers if required.</p>
+                                <button class="action-btn btn-danger" onclick="executeResetLocalReviewMetricsCacheData()">Reset Metric Score Flags</button>
+                            </div>
+                        </div>
+
+                        <div class="right-sidebar-panel">
+                            <div class="widget-box glass-panel">
+                                <h3><i class='bx bxs-megaphone' style="color:var(--neon-purple)"></i> Broadcast Alert Directives</h3>
+                                <textarea id="adminInputAnnouncementBroadcastBodyString" style="width:100%; height:72px; border:1px solid var(--border); border-radius:10px; color:var(--text-main); background:var(--input-bg); padding:12px; font-size:14px; margin-bottom:12px;" placeholder="Input target alert statement broadcast context data..."></textarea>
+                                <button class="action-btn" style="width:100%; justify-content:center;" onclick="executeAdministrativeAnnouncementBroadcastDispatchSequence()">Transmit Global Stream <i class='bx bx-broadcast' ></i></button>
+                            </div>
+
+                            <div class="widget-box glass-panel">
+                                <h3>Active Broadcast Streams Buffer</h3>
+                                <div style="margin-top:12px;">${announcementListHTML || '<p style="color:var(--text-sub); font-size:13px;">No alerts logged.</p>'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function executeAdministrativeInjectCurriculumSubject() {
+            let category = document.getElementById('adminInputCurriculumCategory').value;
+            let subInput = document.getElementById('adminInputCurriculumSubjectTitle');
+            let val = subInput.value.trim();
+            if(!val) return alert("System Error: Discipline labels cannot parse empty matrices indices.");
+
+            if(!systemState.curriculumRegistry[category].includes(val)) {
+                systemState.curriculumRegistry[category].push(val);
+                commitLocalStatePersistence(); 
+                subInput.value = "";
+                renderAdminPanelWorkspaceView(document.getElementById('workspaceRootHook'));
+                spawnToastNotification("Registry Injected", "New subject classification created.", 'bxs-folder-plus');
+            }
+        }
+
+        function executeAdministrativeAnnouncementBroadcastDispatchSequence() {
+            let node = document.getElementById('adminInputAnnouncementBroadcastBodyString');
+            let val = node.value.trim();
+            if(!val) return alert("Context Null: Core broadcast components missing.");
+
+            systemState.announcements.push({ id: Date.now(), author: activeClientSession.activeUser.email.split('@')[0], body: val, date: new Date().toLocaleDateString() });
+            commitLocalStatePersistence(); 
+            node.value = "";
+            renderAdminPanelWorkspaceView(document.getElementById('workspaceRootHook'));
+            spawnToastNotification("Directive Logged", "Alert distributed across nodes.", 'bx-broadcast');
+        }
+
+        function executeResetLocalReviewMetricsCacheData() {
+            if(confirm("Confirm resetting all local card scheduling properties down to pristine initialization state?")) {
+                systemState.cardSrmProgressData = {};
+                systemState.globalProgressCounter = 0;
+                commitLocalStatePersistence();
+                spawnToastNotification("Buffer Purged", "Score records adjusted cleanly.", 'bx-refresh');
+                renderAdminPanelWorkspaceView(document.getElementById('workspaceRootHook'));
+            }
+        }
+
+        function spawnToastNotification(heading, text, iconClass = 'bxs-info-circle') {
+            let container = document.getElementById('toast-boundary');
+            let node = document.createElement('div');
+            node.className = "toast-node";
+            node.innerHTML = `<i class='bx ${iconClass}'></i><div class="toast-msg-body"><h5>${heading}</h5><p>${text}</p></div>`;
+            container.appendChild(node);
+            setTimeout(() => node.classList.add('visible'), 30);
+            setTimeout(() => {
+                node.classList.remove('visible');
+                setTimeout(() => node.remove(), 300);
+            }, 3500);
+        }
+
+        function startGlobalSessionTrackingClock() {
+            let cachedRuntime = localStorage.getItem('LMP_SESSION_RUNTIME');
+            if (cachedRuntime) {
+                globalSessionTimerClock = parseInt(cachedRuntime, 10) || 0;
+            }
+
+            setInterval(() => {
+                globalSessionTimerClock++;
+                localStorage.setItem('LMP_SESSION_RUNTIME', globalSessionTimerClock);
+                
+                let m = Math.floor(globalSessionTimerClock / 60).toString().padStart(2, '0');
+                let s = (globalSessionTimerClock % 60).toString().padStart(2, '0');
+                let el = document.getElementById('sessionTimerDisplayClock');
+                if(el) el.innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function togglePomodoroEngine() {
+            let btn = document.getElementById('pomoTriggerBtn');
+            if(pomoState.intervalInstance) {
+                clearInterval(pomoState.intervalInstance);
+                pomoState.intervalInstance = null;
+                btn.innerHTML = "<i class='bx bx-play'></i>";
+                spawnToastNotification("Timer Suspended", "Neural processing clock set to pause state.", 'bx-pause-circle');
+            } else {
+                btn.innerHTML = "<i class='bx bx-pause'></i>";
+                spawnToastNotification("Clock Running", "Neural baseline interval metrics tracking active.", 'bx-play-circle');
+                pomoState.intervalInstance = setInterval(() => {
+                    if(pomoState.seconds === 0) {
+                        if(pomoState.minutes === 0) {
+                            executePomodoroIntervalBoundaryThresholdTriggerShiftRoutineAction();
+                            return;
+                        }
+                        pomoState.minutes--; pomoState.seconds = 59;
+                    } else {
+                        pomoState.seconds--;
+                    }
+                    updatePomodoroDisplayDigitsLayoutView();
+                }, 1000);
+            }
+        }
+
+        function executePomodoroIntervalBoundaryThresholdTriggerShiftRoutineAction() {
+            clearInterval(pomoState.intervalInstance); pomoState.intervalInstance = null;
+            document.getElementById('pomoTriggerBtn').innerHTML = "<i class='bx bx-play'></i>";
+            let lbl = document.getElementById('pomoLabel');
+            if(pomoState.activeMode === 'work') {
+                pomoState.activeMode = 'break'; pomoState.minutes = 5; pomoState.seconds = 0;
+                lbl.innerText = "COGNITIVE BREAK DOWNSHIFT"; alert("Interval Verified: Focus milestone hit. Divert neural assets to break layer states.");
+            } else {
+                pomoState.activeMode = 'work'; pomoState.minutes = 25; pomoState.seconds = 0;
+                lbl.innerText = "POMODORO RUN PATTERN"; alert("Break lifecycle absolute. Reactivate primary recall grids matrices pathways.");
+            }
+            updatePomodoroDisplayDigitsLayoutView();
+        }
+
+        function updatePomodoroDisplayDigitsLayoutView() {
+            let mins = pomoState.minutes.toString().padStart(2, '0');
+            let secs = pomoState.seconds.toString().padStart(2, '0');
+            document.getElementById('pomoDisplayClock').innerText = `${mins}:${secs}`;
+        }
+
+        function toggleAudioStream() {
+            let track = document.getElementById('audioRuntimeStream');
+            let ico = document.getElementById('audioTrackIco');
+            if(track.paused) {
+                track.play().catch(() => console.log("System bypass required for raw hardware media stream playback triggers."));
+                ico.className = "bx bx-volume-full"; ico.style.color = "var(--neon-blue)";
+            } else {
+                track.pause(); ico.className = "bx bx-volume-mute"; ico.style.color = "var(--text-sub)";
+            }
+        }
+
+        function initializeThemeStateEngine() {
+            let active = localStorage.getItem('LMP_THEME_CONFIG_SELECTION') || 'dark';
+            document.body.className = `${active}-mode`;
+            
+            let iconEl = document.getElementById('headerThemeIcon');
+            let textEl = document.getElementById('headerThemeText');
+            
+            if(active === 'light') {
+                if(iconEl) iconEl.className = "bx bxs-sun";
+                if(textEl) textEl.innerText = "Dark Framework";
+            } else {
+                if(iconEl) iconEl.className = "bx bxs-moon";
+                if(textEl) textEl.innerText = "Light Framework";
+            }
+        }
+
+        function toggleThemeConfiguration() {
+            let isLight = document.body.classList.contains('light-mode');
+            let targetMode = isLight ? 'dark' : 'light';
+            localStorage.setItem('LMP_THEME_CONFIG_SELECTION', targetMode);
+            initializeThemeStateEngine();
+        }
+
+        window.addEventListener('keydown', function(e) {
+            if(activeClientSession.activeWorkspace !== 'arena') return;
+            if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+            if(e.code === 'Space') { e.preventDefault(); executeCardViewportRotationFlipTrigger(); }
+            else if(e.code === 'ArrowRight') { e.preventDefault(); shiftManualArenaPointerPointerValue(1); }
+            else if(e.code === 'ArrowLeft') { e.preventDefault(); shiftManualArenaPointerPointerValue(-1); }
+        });
+
+        function escapeStringOutputMarkup(str) {
+            if(!str) return "";
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
